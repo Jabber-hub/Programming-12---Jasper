@@ -2,14 +2,25 @@
 //Programming 12 intro project
 //Sept 5
 
+float sunY = 200;
+float moonY = 1000;
+
+
 void setup() {
   size(800, 600);
 }
 
 void draw() {
+  if (sunY < -200) {
+  background(#000000);
+  } else {
   background(#BFD0FF);
+}
+  //background(#BFD0FF);
+  moon();
+  sun(200);
+  noStroke();
   house();
-  sun(200, 100);
 }
 
 void house() {
@@ -33,16 +44,35 @@ void house() {
   triangle(350, 300, 525, 200, 700, 300);
 }
 
-void sun(int x, float y) {
+void sun(int x) {
   fill(#EDBF02);
-  line(150, y, 125, y);
-  line(250, y, 275, y);
-  line(200, y+50, 200, y+75);
-  line(200, y-50, 200, y-75);
-  line(225, y+25, 275, y+75);
-  line(175, y-25, 125, y-75);
-  line(225, y-25, 275, y-75);
-  line(175, y+25, 125, y+75);
-  circle(x, y, 100);
-  y--;
+  stroke(#000000);
+  line(150, sunY, 125, sunY);
+  line(250, sunY, 275, sunY);
+  line(200, sunY+50, 200, sunY+75);
+  line(200, sunY-50, 200, sunY-75);
+  line(225, sunY+25, 275, sunY+75);
+  line(175, sunY-25, 125, sunY-75);
+  line(225, sunY-25, 275, sunY-75);
+  line(175, sunY+25, 125, sunY+75);
+  circle(x, sunY, 100);
+
+  sunY--;
+  if (sunY < -1000) {
+    sunY = 700;
+  }
+  
+}
+
+void moon() {
+  fill(#FFF27C);
+  circle(200, moonY, 75);
+  noStroke();
+  fill(#000000);
+  circle(225, moonY, 75);
+  
+  moonY--;
+  if(moonY < -900) {
+  moonY = 800;
+  }
 }
