@@ -13,12 +13,14 @@ void setup() {
 }
 
 void draw() {
-  robot(150, 200, 2);
+  robot(150, 200, 0.5);
+  robot(300, 432, 3);
 }
 
-void robot(int x, int y, int s) {
+void robot(int x, int y, float s) {
   pushMatrix();
-  translate(x, y);
+  translate(x, y);'
+  scale(s);
 
   head();
   body();
@@ -74,4 +76,11 @@ void body() {
 void track() {
   fill(#715B45);
   rect(-50, 90, 50, 100);
+  line(-50, 123, 0, 123);
+  line(-50, 156, 0, 156);
+  
+  strokeWeight(1);
+  rect(150, 90, 50, 100);
+  line(150, 123, 200, 123);
+  line(150, 156, 200, 156);
 }
