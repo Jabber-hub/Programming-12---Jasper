@@ -17,12 +17,12 @@ int d;
 
 void setup() {
   size(600, 800);
-  mode = MAP1;
+  mode = MAP3;
   x = 300;
   y = 600;
   d = 55;
-  vx = 0;
-  vy = 0;
+  vx = -4;
+  vy = -5;
   
   rectMode(CENTER);
 }
