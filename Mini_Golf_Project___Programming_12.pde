@@ -14,16 +14,17 @@ final int GAMEOVER = 4;
 //ball variables
 float x, y, vx, vy;
 int d;
+boolean dragging = false;
 
 void setup() {
   size(600, 800);
-  mode = MAP3;
+  mode = MAP1;
   x = 300;
   y = 600;
   d = 55;
-  vx = -4;
-  vy = -5;
-  
+  vx = 0;
+  vy = 0;
+
   rectMode(CENTER);
 }
 
@@ -38,5 +39,23 @@ void draw() {
     gameover();
   } else {
     println("Error: Mode = " + mode);
+  }
+  //if (dragging) text("dragging", width/2, height/2);
+  //if (!dragging) text("not dragging", width/2, height/2);
+}
+
+
+
+void mousePressed() {
+  if (dist(mouseX, mouseY, x, y) < 35) {
+    dragging = true;
+  }
+}
+
+void mouseReleased() {
+  if (dragging == true && mouseX < 500 && mouseX > 100 && mouseY > 500) {
+    vx = (x - mouseX)/12;
+    vy = (y - mouseY)/12;
+    dragging = false;
   }
 }
