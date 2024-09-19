@@ -15,6 +15,8 @@ final int GAMEOVER = 4;
 float x, y, vx, vy;
 int d;
 boolean dragging = false;
+boolean redturn = false;
+boolean becomeredturn = false;
 
 void setup() {
   size(600, 800);
@@ -42,6 +44,8 @@ void draw() {
   }
   //if (dragging) text("dragging", width/2, height/2);
   //if (!dragging) text("not dragging", width/2, height/2);
+  if (redturn) text("dragging", width/2, height/2);
+  if (!redturn) text("not dragging", width/2, height/2);
 }
 
 
