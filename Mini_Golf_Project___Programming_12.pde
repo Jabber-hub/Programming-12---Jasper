@@ -5,7 +5,7 @@ color blue   = #98B1C6;
 color orange = #E39732;
 
 //mode
-int mode;
+int mode, turncounter, bluescore, redscore;
 final int MAP1     = 1;
 final int MAP2     = 2;
 final int MAP3     = 3;
@@ -17,9 +17,15 @@ int d;
 boolean dragging = false;
 boolean redturn = false;
 boolean becomeredturn = false;
+boolean blueturn = true;
+boolean becomeblueturn = false;
+boolean bluewin = false;
+boolean redwin = false;
+boolean draw = false;
 
 void setup() {
   size(600, 800);
+  turncounter = 0;
   mode = MAP1;
   x = 300;
   y = 600;
@@ -42,10 +48,6 @@ void draw() {
   } else {
     println("Error: Mode = " + mode);
   }
-  //if (dragging) text("dragging", width/2, height/2);
-  //if (!dragging) text("not dragging", width/2, height/2);
-  if (redturn) text("dragging", width/2, height/2);
-  if (!redturn) text("not dragging", width/2, height/2);
 }
 
 
@@ -57,9 +59,13 @@ void mousePressed() {
 }
 
 void mouseReleased() {
-  if (dragging == true && mouseX < 500 && mouseX > 100 && mouseY > 500) {
+  if (dragging && mouseX < 500 && mouseX > 100 && mouseY > 500) {
     vx = (x - mouseX)/12;
     vy = (y - mouseY)/12;
     dragging = false;
+  }
+  
+  if (mode == GAMEOVER) {
+  mode = MAP1;
   }
 }
