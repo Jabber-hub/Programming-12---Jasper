@@ -10,8 +10,14 @@ color yellow = color(242, 215, 16);
 
 //assets
 PImage redBird;
+PImage chicken;
 
-FPoly topPlatform; 
+float cloudX = 50;
+
+boolean gravity = true;
+boolean spawn = true;
+
+FPoly topPlatform;
 FPoly bottomPlatform;
 
 //fisica
@@ -20,9 +26,10 @@ FWorld world;
 void setup() {
   //make window
   fullScreen();
-  
+
   //load resources
   redBird = loadImage("red-bird.png");
+  chicken = loadImage("chicken.png");
 
   //initialise world
   makeWorld();
@@ -46,10 +53,15 @@ void makeTopPlatform() {
   topPlatform = new FPoly();
 
   //plot the vertices of this platform
-  topPlatform.vertex(-100, height*.1);
-  topPlatform.vertex(width*0.8, height*0.4);
-  topPlatform.vertex(width*0.8, height*0.4+100);
-  topPlatform.vertex(-100, height*0.1+100);
+  topPlatform.vertex(100, 300);
+  topPlatform.vertex(100, 500);
+  topPlatform.vertex(300, 500);
+  topPlatform.vertex(300, 300);
+  topPlatform.vertex(280, 300);
+  topPlatform.vertex(280, 480);
+  topPlatform.vertex(280, 480);
+  topPlatform.vertex(120, 480);
+  topPlatform.vertex(120, 300);
 
   // define properties
   topPlatform.setStatic(true);
@@ -84,17 +96,32 @@ void makeBottomPlatform() {
 //===========================================================================================
 
 void draw() {
+
+
   println("x: " + mouseX + " y: " + mouseY);
   background(blue);
+  cloud(cloudX, 100, 50);
+  cloudX += 1;
 
-  if (frameCount % 20 == 0) {  //Every 20 frames ...
-    makeCircle();
-    makeBlob();
+  if (cloudX > width + 100) {
+    cloudX = -100;
+  }
+  if (frameCount % 50 == 0 && spawn) {  //Every 20 frames ...
+    //makeCircle();
+    //makeBlob();
     makeBox();
     makeBird();
   }
+
+  if (gravity) {
   world.step();  //get box2D to calculate all the forces and new positions
+  }
   world.draw();  //ask box2D to convert this world to processing screen coordinates and draw
+  
+
+  cloud(cloudX+200, 150, 75); //cloud
+  gravityButton(100, 100, 100, 50, "gravity");
+  spawnButton(250, 100, 100, 50, "spawn");
 }
 
 
@@ -130,7 +157,7 @@ void makeBlob() {
   blob.setFillColor(yellow);
 
   //set physical properties
-  blob.setDensity(0.000000000001);
+  blob.setDensity(1);
   blob.setFriction(1);
   blob.setRestitution(0.25);
 
@@ -141,7 +168,7 @@ void makeBlob() {
 //===========================================================================================
 
 void makeBox() {
-  FBox box = new FBox(25, 100);
+  FBox box = new FBox(50, 50);
   box.setPosition(random(width), -5);
 
   //set visuals
@@ -149,10 +176,16 @@ void makeBox() {
   box.setStrokeWeight(2);
   box.setFillColor(green);
 
+  PImage resizedChicken = chicken.copy();  // Create a copy of the chicken image
+  resizedChicken.resize(50, 50);  // Resize the copy to 50x50
+
+  // Attach the resized image to the box
+  box.attachImage(resizedChicken);
+
   //set physical properties
   box.setDensity(0.2);
-  box.setFriction(1);
-  box.setRestitution(0.25);
+  box.setFriction(8);
+  box.setRestitution(0.1);
   world.add(box);
 }
 
@@ -168,6 +201,49 @@ void makeBird() {
   //set physical properties
   bird.setDensity(0.1);
   bird.setFriction(0.1);
-  bird.setRestitution(3);
+  bird.setRestitution(0.8);
   world.add(bird);
+}
+
+void cloud(float x, float y, int d) {
+  noStroke();
+  fill(255);
+  circle(x, y, d);
+  circle(x-25, y+10, d+10);
+  circle(x+15, y+15, d+15);
+}
+
+void gravityButton(int x, int y, int w, int h, String t) {
+  if (gravity) {
+  fill(0);
+  }else fill(255);
+  rectMode(CENTER);
+  textMode(CENTER);
+  rect(x, y, w, h);
+  if (gravity) {
+  fill(255);
+  }else fill(0);
+  text(t, x-15, y);
+}
+
+void spawnButton(int x, int y, int w, int h, String t) {
+  if (spawn) {
+  fill(0);
+  }else fill(255);
+  rectMode(CENTER);
+  textMode(CENTER);
+  rect(x, y, w, h);
+  if (spawn) {
+  fill(255);
+  }else fill(0);
+  text(t, x-15, y);
+}
+
+void mouseReleased() {
+if(mouseX > 50 && mouseX < 150 && mouseY > 75 && mouseY < 125) {
+gravity = !gravity;
+}
+if(mouseX > 200 && mouseX < 300 && mouseY > 75 && mouseY < 125) {
+spawn = !spawn;
+}
 }
