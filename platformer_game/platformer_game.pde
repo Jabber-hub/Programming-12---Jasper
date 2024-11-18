@@ -1,16 +1,17 @@
 import fisica.*;
 FWorld world;
 
-color white = #ffffff;
-color black = #000000;
-color green = #009f00;
-color red   = #ff0000;
-color blue  = #0000ff;
-color cyan  = #0ffff0;
-color orange= #f0a000;
-color brown = #996633;
+color white       = #ffffff;
+color black       = #000000;
+color middleGreen = #009f00;
+color green       = #00ff00;
+color red         = #ff0000;
+color blue        = #0000ff;
+color cyan        = #0ffff0;
+color orange      = #f0a000;
+color brown       = #996633;
 
-PImage map, stone, ice, treeTrunk, treeTop;
+PImage map, stone, ice, treeTrunk, leaves, leftLeaves, rightLeaves, topTrunk;
 int gridSize = 32;
 float zoom = 1.5;
 
@@ -24,10 +25,7 @@ void setup() {
   Fisica.init(this);
 
 
-  map = loadImage("map.png");
-  stone = loadImage("brick.png");
-  ice = loadImage("blueBlock.png");
-  treeTrunk = loadImage("tree_trunk.png");
+  loadImages();
   loadWorld(map);
   loadPlayer();
 }
@@ -49,16 +47,18 @@ void loadWorld(PImage img) {
           b.attachImage(stone);
           b.setFriction(4);
           b.setName("stone");
+          
         } else if (c == cyan) {
           ice.resize(gridSize, gridSize);
           b.attachImage(ice);
           b.setFriction(0);
           b.setName("ice");
           
-        } else if (c == green) {
-          b.setFillColor(green);
+        } else if (c == middleGreen) {
+          b.attachImage(leaves);
+          b.setName("leaves");
+          
         } else if (c == brown) {
-          ice.resize(gridSize, gridSize);
           b.attachImage(treeTrunk);
           b.setName("treeTrunk");
           b.setSensor(true);
@@ -90,4 +90,15 @@ void drawWorld() {
   world.draw();
 
   popMatrix();
+}
+
+void loadImages() {
+  map = loadImage("map1.png");
+  stone = loadImage("brick.png");
+  ice = loadImage("blueBlock.png");
+  treeTrunk = loadImage("tree_trunk.png");
+  topTrunk = loadImage("tree_intersect.png");
+  leaves = loadImage("treetop_center.png");
+  leftLeaves = loadImage("treetop_w.png");
+  rightLeaves = loadImage("treetop_e.png");
 }
