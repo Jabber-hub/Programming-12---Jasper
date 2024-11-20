@@ -4,17 +4,14 @@ FWorld world;
 color white       = #ffffff;
 color black       = #000000;
 color grey        = #b5b5b5;
-color middleGreen = #009f00;
 color green       = #00ff00;
-color rightGreen  = #00ff70;
 color red         = #ff0000;
 color blue        = #0000ff;
 color cyan        = #00ffff;
 color orange      = #f0a000;
 color brown       = #996633;
-color intBrown    = #ddaa00;
 
-PImage map, stone, ice, treeTrunk, leaves, leftLeaves, rightLeaves, topTrunk, lava, spike;
+PImage map, stone, ice, treeTrunk, leaves, leftLeaves, rightLeaves, topTrunk, trampoline, lava, spike;
 int gridSize = 32;
 float zoom = 1.5;
 
@@ -39,7 +36,10 @@ void loadWorld(PImage img) {
 
   for (int y = 0; y < img.height; y++) {
     for (int x = 0; x < img.width; x++) {
-      color c = img.get(x, y);
+      color c = img.get(x, y); //color of pixel
+      color s = img.get(x, y+1); //color of pixel below
+      color w = img.get(x-1, y); //color of pixel west
+      color e = img.get(x+1, y); //color of pixel east
       if (alpha(c) > 250) {
         FBox b = new FBox(gridSize, gridSize);
         b.setPosition(x*gridSize, y*gridSize);
@@ -63,18 +63,20 @@ void loadWorld(PImage img) {
           b.setName("spike");
           
         } else if (c == white) { //trampoline
+          trampoline.resize(gridSize, gridSize+30);
+          b.attachImage(trampoline);
           b.setRestitution(1.3);
           b.setName("trampoline");
           
-        } else if (c == middleGreen) { //leaves
+        } else if (c == green && w == green && e == green && s != brown) { //leaves
           b.attachImage(leaves);
           b.setName("leaves");
           
-        } else if (c == green) { //leaves
+        } else if (c == green && w != green) { //left leaves
           b.attachImage(leftLeaves);
           b.setName("leftLeaves");
           
-        } else if (c == rightGreen) { //leaves
+        } else if (c == green && e != green) { //right leaves
           b.attachImage(rightLeaves);
           b.setName("rightLeaves");
           
@@ -83,11 +85,12 @@ void loadWorld(PImage img) {
           b.setName("treeTrunk");
           b.setSensor(true);
           
-        } else if (c == intBrown) { //trunk
+        } else if (c == green && s == brown) { //trunk
           b.attachImage(topTrunk);
           b.setName("topTrunk");
           
         } else if (c == red) {
+          lava.resize(gridSize, gridSize);
           b.attachImage(lava);
           b.setName("lava");
         }
@@ -128,4 +131,5 @@ void loadImages() {
   rightLeaves = loadImage("treetop_e.png");
   lava = loadImage("lava0.png");
   spike = loadImage("spike.png");
+  trampoline = loadImage("trampoline.png");
 }

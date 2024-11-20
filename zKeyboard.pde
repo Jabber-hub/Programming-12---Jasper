@@ -7,6 +7,7 @@ void keyPressed() {
   if (keyCode == DOWN)          downkey = true;
   if (keyCode == LEFT)          leftkey = true;
   if (keyCode == RIGHT)         rightkey = true;
+  
 }
 
 void keyReleased() {
