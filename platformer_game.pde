@@ -111,6 +111,7 @@ void draw() {
 }
 
 void drawWorld() {
+  background(#A6D7FC);
   pushMatrix();
   translate(-player.getX()*zoom+width/2, -player.getY()*zoom+height/2);
   scale(zoom);

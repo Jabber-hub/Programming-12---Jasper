@@ -16,7 +16,7 @@ class FPlayer extends FBox {
 
     // jumping
     if ((wkey) && isOnGround()) {
-      this.addImpulse(0, -700);
+      this.addImpulse(0, -800);
     }
   }
 
