@@ -1,4 +1,6 @@
 import fisica.*;
+
+
 FWorld world;
 
 color white       = #ffffff;
@@ -11,7 +13,7 @@ color cyan        = #00ffff;
 color orange      = #f0a000;
 color brown       = #996633;
 
-PImage map, stone, ice, treeTrunk, leaves, leftLeaves, rightLeaves, topTrunk, trampoline, lava, spike;
+PImage map, bridge, stone, ice, treeTrunk, leaves, leftLeaves, rightLeaves, topTrunk, trampoline, lava, spike;
 int gridSize = 32;
 float zoom = 1.5;
 
@@ -26,12 +28,12 @@ void setup() {
   size(600, 600);
   Fisica.init(this);
 
-  loadImages();       // Load all required images first
-  world = new FWorld(-2000, -2000, 2000, 2000); // Initialize world early
+  loadImages();       
+  world = new FWorld(-2000, -2000, 2000, 2000); 
   world.setGravity(0, 900);
 
-  loadPlayer();       // Initialize the player and add it to the world
-  loadWorld(map);     // Load the world and process the map AFTER player
+  loadPlayer();      
+  loadWorld(map);  
 }
 
 
@@ -105,40 +107,33 @@ void draw() {
 
 
 void drawWorld() {
-  background(#A6D7FC);
-  pushMatrix();
+    background(#A6D7FC);
+    pushMatrix();
 
-  if (!player.die && !player.falling) {
-    // Camera tracks the player when alive and not falling
-    translate(-player.getX() * zoom + width / 2, -650);
-    // Update cameraX and cameraY dynamically to track the player
-    cameraX = player.getX();
-    cameraY = player.getY();
-  } else if (player.falling) {
-    // Camera fixed when the player is falling
-    translate(-cameraX * zoom + width / 2, -650);
-  } else if (player.die) {
-    // Camera fixed when the player dies
-    translate(-cameraX * zoom + width / 2, -650);
-  }
-
-  scale(zoom);
-
-  // Step the physics world
-  world.step();
-
-  // Draw all objects except the player
-  for (Object obj : world.getBodies()) {
-    if (obj instanceof FBody && obj != player) {
-      FBody body = (FBody) obj;
-      body.draw(this);
+    
+    if (!player.die && !player.falling) {
+        translate(-player.getX() * zoom + width / 2, -650);
+        cameraX = player.getX();
+        cameraY = player.getY();
+    } else {
+        translate(-cameraX * zoom + width / 2, -650);
     }
-  }
 
-  // Draw the player last to render it in front
-  player.draw(this);
+    scale(zoom);
 
-  popMatrix();
+    world.step();
+    
+    for (Object obj : world.getBodies()) {
+        if (obj instanceof FBody && obj != player) {
+            FBody body = (FBody) obj;
+            body.draw(this);
+        }
+    }
+
+    // Draw player to render in front of map
+    player.draw(this);
+
+    popMatrix();
 }
 
 
@@ -155,4 +150,5 @@ void loadImages() {
   lava = loadImage("lava0.png");
   spike = loadImage("spike.png");
   trampoline = loadImage("trampoline.png");
+  bridge = loadImage("bridge_center.png");
 }
