@@ -83,7 +83,7 @@ class FPlayer extends FGameObject {
                 die = false;
                 this.setSensor(false);
                 this.setPosition(0, 400);
-                this.setVelocity(0, 0);
+                this.setVelocity(0, 1000);
                 fall = false;
                 falling = false;
             }
