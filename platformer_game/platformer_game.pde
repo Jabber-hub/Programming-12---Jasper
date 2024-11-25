@@ -12,6 +12,7 @@ color blue        = #0000ff;
 color cyan        = #00ffff;
 color orange      = #f0a000;
 color brown       = #996633;
+color pink        = #fb00ff;
 
 PImage map, bridge, stone, ice, treeTrunk, leaves, leftLeaves, rightLeaves, topTrunk, trampoline, lava, spike;
 int gridSize = 32;
@@ -20,6 +21,7 @@ float zoom = 1.5;
 //keyboard
 boolean wkey, akey, skey, dkey, upkey, downkey, rightkey, leftkey;
 FPlayer player;
+ArrayList<FGameObject> terrain;
 
 float cameraX, cameraY;
 
@@ -28,12 +30,14 @@ void setup() {
   size(600, 600);
   Fisica.init(this);
 
-  loadImages();       
-  world = new FWorld(-2000, -2000, 2000, 2000); 
+  terrain = new ArrayList<FGameObject>();
+
+  loadImages();
+  world = new FWorld(-2000, -2000, 2000, 2000);
   world.setGravity(0, 900);
 
-  loadPlayer();      
-  loadWorld(map);  
+  loadPlayer();
+  loadWorld(map);
 }
 
 
@@ -44,7 +48,7 @@ void loadWorld(PImage img) {
       color s = img.get(x, y+1); //color of pixel below
       color w = img.get(x-1, y); //color of pixel west
       color e = img.get(x+1, y); //color of pixel east
-      if (alpha(c) > 250) {
+      if (c == black || c == cyan || c == grey || c == white || c == green || c == brown || c == red) {//alpha(c) > 250) {
         FBox b = new FBox(gridSize, gridSize);
         b.setPosition(x*gridSize, y*gridSize);
         b.setStatic(true);
@@ -89,10 +93,15 @@ void loadWorld(PImage img) {
           b.attachImage(lava);
           b.setName("lava");
         }
+      } else if (c == pink) {
+        FBridge br = new FBridge(x*gridSize, y*gridSize);
+        terrain.add(br);
+        world.add(br);
       }
     }
   }
 }
+
 
 void loadPlayer() {
   player = new FPlayer();
@@ -102,44 +111,51 @@ void loadPlayer() {
 void draw() {
   background(white);
   drawWorld();
-  player.act();
+  actWorld();
 }
 
+void actWorld() {
+  player.act();
+  for (int i = 0; i < terrain.size(); i++) {
+    FGameObject t = terrain.get(i);
+    t.act();
+  }
+}
 
 void drawWorld() {
-    background(#A6D7FC);
-    pushMatrix();
+  background(#A6D7FC);
+  pushMatrix();
 
-    
-    if (!player.die && !player.falling) {
-        translate(-player.getX() * zoom + width / 2, -650);
-        cameraX = player.getX();
-        cameraY = player.getY();
-    } else {
-        translate(-cameraX * zoom + width / 2, -650);
+
+  if (!player.die && !player.falling) {
+    translate(-player.getX() * zoom + width / 2, -650);
+    cameraX = player.getX();
+    cameraY = player.getY();
+  } else {
+    translate(-cameraX * zoom + width / 2, -650);
+  }
+
+  scale(zoom);
+
+  world.step();
+
+  for (Object obj : world.getBodies()) {
+    if (obj instanceof FBody && obj != player) {
+      FBody body = (FBody) obj;
+      body.draw(this);
     }
+  }
 
-    scale(zoom);
+  // Draw player to render in front of map
+  player.draw(this);
 
-    world.step();
-    
-    for (Object obj : world.getBodies()) {
-        if (obj instanceof FBody && obj != player) {
-            FBody body = (FBody) obj;
-            body.draw(this);
-        }
-    }
-
-    // Draw player to render in front of map
-    player.draw(this);
-
-    popMatrix();
+  popMatrix();
 }
 
 
 
 void loadImages() {
-  map = loadImage("map2.png");
+  map = loadImage("map3.png");
   stone = loadImage("brick.png");
   ice = loadImage("blueBlock.png");
   treeTrunk = loadImage("tree_trunk.png");
