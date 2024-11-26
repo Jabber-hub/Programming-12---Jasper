@@ -62,7 +62,7 @@ class FPlayer extends FGameObject {
     }
 
     void checkForSpike() { //player touching spike?
-        if (isTouching("spike")) {
+        if (isTouching("spike") || isTouching("lava")) {
           this.setSensor(true);
             die = true;
             deathStartFrame = frameCount;

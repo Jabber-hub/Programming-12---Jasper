@@ -27,7 +27,7 @@ float cameraX, cameraY;
 
 
 void setup() {
-  size(600, 600);
+  size(600, 600);//, P2D);
   Fisica.init(this);
 
   terrain = new ArrayList<FGameObject>();
@@ -48,7 +48,7 @@ void loadWorld(PImage img) {
       color s = img.get(x, y+1); //color of pixel below
       color w = img.get(x-1, y); //color of pixel west
       color e = img.get(x+1, y); //color of pixel east
-      if (c == black || c == cyan || c == grey || c == white || c == green || c == brown || c == red) {//alpha(c) > 250) {
+      if (c == black || c == cyan || c == grey || c == white || c == green || c == brown) {//alpha(c) > 250) {
         FBox b = new FBox(gridSize, gridSize);
         b.setPosition(x*gridSize, y*gridSize);
         b.setStatic(true);
@@ -88,12 +88,12 @@ void loadWorld(PImage img) {
         } else if (c == green && s == brown) { //trunk
           b.attachImage(topTrunk);
           b.setName("topTrunk");
-        } else if (c == red) {
-          lava.resize(gridSize, gridSize);
-          b.attachImage(lava);
-          b.setName("lava");
-        }
-      } else if (c == pink) {
+        } 
+      } else if (c == red) {
+          FLava lv = new FLava(x*gridSize, y*gridSize);
+          terrain.add(lv);
+          world.add(lv);
+        } else if (c == pink) {
         FBridge br = new FBridge(x*gridSize, y*gridSize);
         terrain.add(br);
         world.add(br);
@@ -152,7 +152,7 @@ void drawWorld() {
   popMatrix();
 }
 
-
+ArrayList<PImage> lavaImages;
 
 void loadImages() {
   map = loadImage("map3.png");
@@ -163,8 +163,12 @@ void loadImages() {
   leaves = loadImage("treetop_center.png");
   leftLeaves = loadImage("treetop_w.png");
   rightLeaves = loadImage("treetop_e.png");
-  lava = loadImage("lava0.png");
   spike = loadImage("spike.png");
   trampoline = loadImage("trampoline.png");
   bridge = loadImage("bridge_center.png");
+  
+  lavaImages = new ArrayList<PImage>();
+    for (int i = 0; i <= 8; i++) {
+        lavaImages.add(loadImage("lava" + i + ".png")); // Assumes files are named lava0.png, lava1.png, ...
+    }
 }
