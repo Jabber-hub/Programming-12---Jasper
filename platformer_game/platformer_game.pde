@@ -15,6 +15,12 @@ color brown       = #996633;
 color pink        = #fb00ff;
 
 PImage map, bridge, stone, ice, treeTrunk, leaves, leftLeaves, rightLeaves, topTrunk, trampoline, lava, spike;
+//mario animations
+PImage[] idle;
+PImage[] jump;
+PImage[] run;
+PImage[] action;
+
 int gridSize = 32;
 float zoom = 1.5;
 
@@ -77,10 +83,10 @@ void loadWorld(PImage img) {
           b.setName("leaves");
         } else if (c == green && w != green) { //left leaves
           b.attachImage(leftLeaves);
-          b.setName("leftLeaves");
+          b.setName("leaves");
         } else if (c == green && e != green) { //right leaves
           b.attachImage(rightLeaves);
-          b.setName("rightLeaves");
+          b.setName("leaves");
         } else if (c == brown) { //trunk
           b.attachImage(treeTrunk);
           b.setName("treeTrunk");
@@ -88,12 +94,12 @@ void loadWorld(PImage img) {
         } else if (c == green && s == brown) { //trunk
           b.attachImage(topTrunk);
           b.setName("topTrunk");
-        } 
+        }
       } else if (c == red) {
-          FLava lv = new FLava(x*gridSize, y*gridSize);
-          terrain.add(lv);
-          world.add(lv);
-        } else if (c == pink) {
+        FLava lv = new FLava(x*gridSize, y*gridSize);
+        terrain.add(lv);
+        world.add(lv);
+      } else if (c == pink) {
         FBridge br = new FBridge(x*gridSize, y*gridSize);
         terrain.add(br);
         world.add(br);
@@ -126,7 +132,8 @@ void drawWorld() {
   background(#A6D7FC);
   pushMatrix();
 
-
+  //scale(zoom);
+  //translate(width/2/zoom - player.getX(), height/2/zoom - player.getY());
   if (!player.die && !player.falling) {
     translate(-player.getX() * zoom + width / 2, -650);
     cameraX = player.getX();
@@ -150,6 +157,7 @@ void drawWorld() {
   player.draw(this);
 
   popMatrix();
+  text("here", player.getX(), player.getY());
 }
 
 ArrayList<PImage> lavaImages;
@@ -159,16 +167,31 @@ void loadImages() {
   stone = loadImage("brick.png");
   ice = loadImage("blueBlock.png");
   treeTrunk = loadImage("tree_trunk.png");
-  topTrunk = loadImage("tree_intersect.png");
-  leaves = loadImage("treetop_center.png");
-  leftLeaves = loadImage("treetop_w.png");
-  rightLeaves = loadImage("treetop_e.png");
+  topTrunk = loadImage("tree_intersect1.png");
+  leaves = loadImage("treetop_center1.png");
+  leftLeaves = loadImage("treetop_w1.png");
+  rightLeaves = loadImage("treetop_e1.png");
   spike = loadImage("spike.png");
   trampoline = loadImage("trampoline.png");
   bridge = loadImage("bridge_center.png");
-  
+
   lavaImages = new ArrayList<PImage>();
-    for (int i = 0; i <= 8; i++) {
-        lavaImages.add(loadImage("lava" + i + ".png")); // Assumes files are named lava0.png, lava1.png, ...
-    }
+  for (int i = 0; i <= 8; i++) {
+    lavaImages.add(loadImage("lava" + i + ".png")); // Assumes files are named lava0.png, lava1.png, ...
+  }
+
+  //Mario animations
+  idle = new PImage[2];
+  idle[0] = loadImage("idle0.png");
+  idle[1] = loadImage("idle1.png");
+
+  jump = new PImage[1];
+  jump[0] = loadImage("jump0.png");
+
+  run = new PImage[3];
+  run[0] = loadImage("runright0.png");
+  run[1] = loadImage("runright1.png");
+  run[2] = loadImage("runright2.png");
+
+  action = idle;
 }
