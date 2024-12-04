@@ -4,7 +4,7 @@ class FLava extends FGameObject {
     int lastUpdateTime = 0; 
 
     FLava(float x, float y) {
-        super(gridSize, gridSize);
+        super(gridSize, gridSize/2);
         setPosition(x, y);
         setName("lava");
         attachImage(lavaImages.get(0)); 

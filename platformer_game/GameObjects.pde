@@ -23,4 +23,18 @@ class FGameObject extends FBox {
     }
     return false;
   }
+  
+  boolean sTouching(FBox s, String n) {
+    ArrayList<FContact> contactList = s.getContacts();
+    for (FContact c : contactList) {
+        if (n.equals("floor")) {
+            if (c.contains("stone") || c.contains("wall") || c.contains("ice") || c.contains("leaves") || c.contains("bridge")) {
+                return true;
+            }
+        } else if (c.contains(n)) {
+            return true;
+        }
+    }
+    return false;
+}
 }

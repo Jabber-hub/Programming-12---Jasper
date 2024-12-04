@@ -11,15 +11,16 @@ class FPlayer extends FGameObject {
   final int R = 1;
 
   FBox bottomSensor;
-  
+
   boolean jumping = false;
-  int jumpStartFrame = 0; 
-  int maxJumpFrames = 20;
-  float jumpImpulse = -350;   
+  int jumpStartFrame = 0;
+  int maxJumpFrames = 12;
+  float jumpImpulse = -70;
 
   FPlayer() {
     super(gridSize-10, gridSize-5);
     setPosition(0, 400);
+    setRotation(0);
     direction = R;
     setName("player");
     setFillColor(color(255, 0, 0));
@@ -38,14 +39,14 @@ class FPlayer extends FGameObject {
   void act() {
     if (!die) {
       input();
-      checkForSpike();
+      checkForDeadly();
     }
 
     checkForFall();
     deathTimer();
     animate();
 
-    bottomSensor.setPosition(getX(), getY() + (gridSize / 2));
+    bottomSensor.setPosition(getX(), getY() + (gridSize / 2) + 1);
     bottomSensor.setVelocity(getVelocityX(), getVelocityY());
   }
 
@@ -71,22 +72,26 @@ class FPlayer extends FGameObject {
       this.setVelocity(-125, vy);
       action = run;
       direction = L;
-    } 
+    }
     if (dkey) {
       this.setVelocity(125, vy);
       action = run;
       direction = R;
     }
 
+    if (spacekey) {
+      addImpulse(0, jumpImpulse);
+    }
+
     if (wkey) {
       if (sTouching(bottomSensor, "floor") && !jumping) {
         jumping = true;
         jumpStartFrame = frameCount;
-        println("Jump started");
+        //println("Jump started");
       }
 
       if (jumping && (frameCount - jumpStartFrame) < maxJumpFrames) {
-        setVelocity(vx, jumpImpulse);
+        addImpulse(0, jumpImpulse);
       }
     } else {
       jumping = false;
@@ -123,18 +128,26 @@ class FPlayer extends FGameObject {
     }
   }
 
-  void checkForSpike() { //player touching spike?
+  void checkForDeadly() { //player touching deadly block?
     if (sTouching(bottomSensor, "spike") || sTouching(bottomSensor, "lava")) {
       this.setSensor(true);
       die = true;
       deathStartFrame = frameCount;
       this.setVelocity(0, -400);
     }
+    if (isTouching("goomba")) {
+      if (!sTouching(bottomSensor, "goomba")) {
+        this.setSensor(true);
+        die = true;
+        deathStartFrame = frameCount;
+        this.setVelocity(0, -400);
+      }
+    }
   }
 
   void deathTimer() { //wait before set die false
     if (die) {
-
+      setAngularVelocity(30);
 
       if (deathStartFrame == frameCount) {
         cameraX = this.getX();
@@ -146,6 +159,8 @@ class FPlayer extends FGameObject {
         this.setSensor(false);
         this.setPosition(0, 400);
         this.setVelocity(0, 1000);
+        setAngularVelocity(0);
+        setRotation(0);
         fall = false;
         falling = false;
       }
@@ -155,21 +170,4 @@ class FPlayer extends FGameObject {
   boolean isOnGround() {
     return abs(this.getVelocityY()) < 0.5;
   }
-
-  boolean sTouching(FBox s, String n) {
-    ArrayList<FContact> contactList = s.getContacts();
-    for (FContact c : contactList) {
-        println("Sensor contact: " + c.getBody1().getName() + " <-> " + c.getBody2().getName());
-        if (n.equals("floor")) {
-            if (c.contains("stone") || c.contains("ice") || c.contains("leaves") || c.contains("bridge") || c.contains("trampoline")) {
-                println("Sensor is touching floor: " + c);
-                return true;
-            }
-        } else if (c.contains(n)) {
-            println("Sensor is touching: " + n);
-            return true;
-        }
-    }
-    return false;
-}
 }

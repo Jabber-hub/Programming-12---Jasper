@@ -7,6 +7,7 @@ void keyPressed() {
   if (keyCode == DOWN)          downkey = true;
   if (keyCode == LEFT)          leftkey = true;
   if (keyCode == RIGHT)         rightkey = true;
+  if (key == ' ')               spacekey = true;
 }
 
 void keyReleased() {
@@ -14,8 +15,18 @@ void keyReleased() {
   if (key == 'a' || key == 'A') akey = false;
   if (key == 's' || key == 'S') skey = false;
   if (key == 'd' || key == 'D') dkey = false;
-  if (keyCode == UP) upkey = false;
-  if (keyCode == DOWN) downkey = false;
+  if (keyCode == UP) {
+    upkey = false;
+    FGoomba gmb = new FGoomba(player.getX() + (mouseX-width/2)/zoom, player.getY() + (mouseY-width/2)/zoom);
+    println(mouseX-width/2, mouseY-width/2);
+    enemies.add(gmb);
+    world.add(gmb);
+  }
+  if (keyCode == DOWN) {
+    downkey = false;
+    println(player.getX(), player.getY());
+  }
   if (keyCode == LEFT) leftkey = false;
   if (keyCode == RIGHT) rightkey = false;
+  if (key == ' ') spacekey = false;
 }
