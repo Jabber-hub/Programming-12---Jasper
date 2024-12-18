@@ -1,6 +1,5 @@
 import fisica.*;
 
-
 FWorld world;
 
 color white       = #ffffff;
@@ -15,8 +14,10 @@ color brown       = #996633;
 color pink        = #fb00ff;
 color yellow      = #fff000;
 color maroon      = #600000;
+color hbBlue      = #4444ee;
+color thwompPink  = #ff7777;
 
-PImage map, bridge, stone, ice, treeTrunk, leaves, leftLeaves, rightLeaves, topTrunk, trampoline, lava, spike;
+PImage map, Hammer, bridge, stone, ice, treeTrunk, leaves, leftLeaves, rightLeaves, topTrunk, trampoline, lava, spike;
 //mario animations
 PImage[] idle;
 PImage[] jump;
@@ -25,6 +26,8 @@ PImage[] action;
 
 //enemies
 PImage[] goomba;
+PImage[] hammerbro;
+PImage[] thwomp;
 
 int gridSize = 32;
 float zoom = 1.5;
@@ -46,7 +49,7 @@ void setup() {
   enemies = new ArrayList<FGameObject>();
 
   loadImages();
-  world = new FWorld(-2000, -2000, 2000, 2000);
+  world = new FWorld(-3000, -3000, 3000, 3000);
   world.setGravity(0, 900);
 
   loadPlayer();
@@ -101,7 +104,7 @@ void loadWorld(PImage img) {
         } else if (c == green && s == brown) { //trunk
           b.attachImage(topTrunk);
           b.setName("leaves");
-        }  else if (c == maroon) {
+        } else if (c == maroon) {
           b.attachImage(stone);
           b.setFriction(1);
           b.setName("wall");
@@ -118,7 +121,15 @@ void loadWorld(PImage img) {
         FGoomba gmb = new FGoomba(x*gridSize, y*gridSize);
         enemies.add(gmb);
         world.add(gmb);
-        }
+      } else if (c == hbBlue) {
+        FHammerBro hmb = new FHammerBro(x*gridSize, y*gridSize);
+        enemies.add(hmb);
+        world.add(hmb);
+      } else if (c == thwompPink) {
+        FThwomp thw = new FThwomp(x*gridSize + 16, y*gridSize + 15);
+        enemies.add(thw);
+        world.add(thw);
+      }
     }
   }
 }
@@ -182,7 +193,7 @@ void drawWorld() {
 ArrayList<PImage> lavaImages;
 
 void loadImages() {
-  map = loadImage("map.png");
+  map = loadImage("map4.png");
   stone = loadImage("brick.png");
   ice = loadImage("blueBlock.png");
   treeTrunk = loadImage("tree_trunk.png");
@@ -193,8 +204,8 @@ void loadImages() {
   spike = loadImage("spike.png");
   trampoline = loadImage("trampoline.png");
   bridge = loadImage("bridge_center.png");
-  
-  
+
+
 
   lavaImages = new ArrayList<PImage>();
   for (int i = 0; i <= 8; i++) {
@@ -213,13 +224,27 @@ void loadImages() {
   run[0] = loadImage("runright0.png");
   run[1] = loadImage("runright1.png");
   run[2] = loadImage("runright2.png");
-  
+
   //ENEMIES
   goomba = new PImage[2];
   goomba[0] = loadImage("goomba0.png");
   goomba[0].resize(gridSize-5, gridSize-5);
   goomba[1] = loadImage("goomba1.png");
   goomba[1].resize(gridSize-5, gridSize-5);
+
+  hammerbro = new PImage[2];
+  hammerbro[0] = loadImage("hammerbro0.png");
+  hammerbro[0].resize(gridSize-5, gridSize-5);
+  hammerbro[1] = loadImage("hammerbro1.png");
+  hammerbro[1].resize(gridSize-5, gridSize-5);
+  
+  Hammer = loadImage("hammer.png");
+  
+  thwomp = new PImage[2];
+  thwomp[0] = loadImage("thwomp0.png");
+  thwomp[0].resize(gridSize*2, gridSize*2);
+  thwomp[1] = loadImage("thwomp1.png");
+  thwomp[1].resize(gridSize*2, gridSize*2);
 
   action = idle;
 }

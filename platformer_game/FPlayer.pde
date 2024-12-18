@@ -3,7 +3,7 @@ class FPlayer extends FGameObject {
   boolean fall = false;
   boolean die = false;
   int deathStartFrame = -1;
-  int dieWaitFrames = 160;
+  int dieWaitFrames = 120;
   int frame = 0;
 
   int direction;
@@ -21,13 +21,14 @@ class FPlayer extends FGameObject {
     super(gridSize-10, gridSize-5);
     setPosition(0, 400);
     setRotation(0);
+    setDensity(1);
     direction = R;
     setName("player");
     setFillColor(color(255, 0, 0));
     setRotatable(false);
 
     //bottom sensor
-    bottomSensor = new FBox(gridSize - 15, 5);
+    bottomSensor = new FBox(gridSize - 11, 5);
     bottomSensor.setStaticBody(false);
     bottomSensor.setSensor(true);
     bottomSensor.setFill(white, 0);
@@ -48,7 +49,12 @@ class FPlayer extends FGameObject {
 
     bottomSensor.setPosition(getX(), getY() + (gridSize / 2) + 1);
     bottomSensor.setVelocity(getVelocityX(), getVelocityY());
-  }
+    
+    //teleport
+    if (rightkey == true) {
+    setPosition(1300, 700);
+    }
+}
 
   void animate() {
     if (frame >= action.length) frame = 0;
@@ -116,7 +122,7 @@ class FPlayer extends FGameObject {
       falling = false;
     }
 
-    if (this.getY() > 800 && !falling && !die) {
+    if (this.getY() > 850 && !falling && !die) {
       cameraX = this.getX();
       cameraY = this.getY();
       falling = true;
@@ -129,19 +135,11 @@ class FPlayer extends FGameObject {
   }
 
   void checkForDeadly() { //player touching deadly block?
-    if (sTouching(bottomSensor, "spike") || sTouching(bottomSensor, "lava")) {
+    if (sTouching(bottomSensor, "spike") || isTouching("thwomp") || sTouching(bottomSensor, "lava") || isTouching("hammer")) {
       this.setSensor(true);
       die = true;
       deathStartFrame = frameCount;
       this.setVelocity(0, -400);
-    }
-    if (isTouching("goomba")) {
-      if (!sTouching(bottomSensor, "goomba")) {
-        this.setSensor(true);
-        die = true;
-        deathStartFrame = frameCount;
-        this.setVelocity(0, -400);
-      }
     }
   }
 

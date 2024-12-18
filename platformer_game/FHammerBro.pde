@@ -1,4 +1,4 @@
-class FGoomba extends FGameObject {
+class FHammerBro extends FGameObject {
 
   float speed = 40;
   int direction = 1;
@@ -14,46 +14,26 @@ class FGoomba extends FGameObject {
 
   boolean die;
 
-  FGoomba(float x, float y) {
-    super(gridSize - 5, gridSize - 5);
+  FHammerBro(float x, float y) {
+    super(gridSize - 15, gridSize - 5);
     setPosition(x, y);
     setRestitution(0.4);
     setRotatable(false);
-    setName("goomba");
+    setName("hammerBro");
   }
 
   void act() {
-    //if (!die) {
-    //  setVelocity(vx * direction, getVelocityY());
-
-    //  if (isTouching("wall") || isTouching("goomba") && frameCount > lastWallCollisionFrame + wallCooldownFrames) {
-    //    direction *= -1;
-    //    lastWallCollisionFrame = frameCount;
-    //  }
-    //  if (frameCount - lastUpdateTime >= delay) {
-    //    lastUpdateTime = frameCount;
-    //    frame = (frame + 1) % 2;
-    //    attachImage(goomba[frame]);
-    //  }
-    //  if (sTouching(this, ("bottomSensor")) && player.getY() - getY() < -gridSize/1.1) {
-    //    die = true;
-    //    player.setVelocity(player.getVelocityX(), -200);
-    //    setPosition(getX(), getY()-10);
-    //  }
-    //}  if (die == true) {
-    //  setVelocity(0, getVelocityY());
-    //  setSensor(true);
-    //}
-
     animate();
     move();
     collide();
+    throwHammers();
   }
 
   void animate() {
     if (frame >= goomba.length) frame = 0;
     if (frameCount % 5 == 0) {
-      attachImage(goomba[frame]);
+      if (direction == R) attachImage(hammerbro[frame]);
+      if (direction == L) attachImage(reverseImage(hammerbro[frame]));
       frame++;
     }
   }
@@ -68,7 +48,7 @@ class FGoomba extends FGameObject {
       direction *= -1;
       setPosition(getX()+direction*2, getY());
     }
-    if (isTouching("player") && !player.isSensor()) {
+    if (isTouching("player") ) {
       if (player.getY() < getY()-gridSize/1.5) {
         this.setVelocity(0, getVelocityY());
         if (!isSensor()) setPosition(getX(), getY()-1);
@@ -82,6 +62,19 @@ class FGoomba extends FGameObject {
         player.deathStartFrame = frameCount;
         player.setSensor(true);
       }
+    }
+  }
+  void throwHammers() {
+    if (frameCount % 150 == 0 && !isSensor()) {
+    FGameObject hammer = new FGameObject(20, 20);
+    hammer.setPosition(getX(), getY());
+    hammer.setVelocity(random(150, 250)*direction, -random(400, 600));
+    hammer.setAngularVelocity(random(20, 50)*direction);
+    hammer.setSensor(true);
+    hammer.setRestitution(1);
+    hammer.attachImage(Hammer);
+    hammer.setName("hammer");
+    world.add(hammer);
     }
   }
 }
