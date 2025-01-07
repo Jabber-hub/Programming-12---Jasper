@@ -16,8 +16,10 @@ color yellow      = #fff000;
 color maroon      = #600000;
 color hbBlue      = #4444ee;
 color thwompPink  = #ff7777;
+color winGreen    = #aaccaa;
 
-PImage map, Hammer, bridge, stone, ice, treeTrunk, leaves, leftLeaves, rightLeaves, topTrunk, trampoline, lava, spike;
+
+PImage map, winBlock, Hammer, bridge, stone, ice, treeTrunk, leaves, leftLeaves, rightLeaves, topTrunk, trampoline, lava, spike;
 //mario animations
 PImage[] idle;
 PImage[] jump;
@@ -40,6 +42,27 @@ ArrayList<FGameObject> enemies;
 
 float cameraX, cameraY;
 
+// Mode framework
+final int INTRO = 0;
+final int GAME = 1;
+final int PAUSE = 2;
+final int GAME_OVER = 3;
+final int WON = 4;
+
+int mode = INTRO; // Start in the intro mode
+
+boolean keyHandled = false;
+
+//BUTTON
+boolean mouseReleased;
+boolean wasPressed;
+
+Button[] myButtons;
+
+PFont retro;
+
+//GIF
+gif intro, game, gameover, win;
 
 void setup() {
   size(600, 600);//, P2D);
@@ -54,6 +77,20 @@ void setup() {
 
   loadPlayer();
   loadWorld(map);
+  
+  //Buttons
+  myButtons = new Button[2];
+  myButtons[0] = new Button("START", 300, 400, 250, 100, black, white);
+  myButtons[1] = new Button("RETRY", 300, 400, 250, 100, white, black);
+  
+  retro = createFont("Retro Gaming.ttf", 75);
+  
+  //GIFS
+  intro = new gif("Intro/frame_", "_delay-0.2s.gif", 10, 20, 0, 0, width, height);
+  game = new gif("Game/frame_", "_delay-0.2s.gif", 4, 15, 0, 0, width, height);
+  gameover = new gif("GameOver/frame_", "_delay-0.5s.gif", 2, 3, 0, 0, width, height);
+  win = new gif("Win/frame_", "_delay-0.01s.gif", 4, 7, 0, 0, width, height);
+
 }
 
 
@@ -64,7 +101,7 @@ void loadWorld(PImage img) {
       color s = img.get(x, y+1); //color of pixel below
       color w = img.get(x-1, y); //color of pixel west
       color e = img.get(x+1, y); //color of pixel east
-      if (c == black || c == cyan || c == grey || c == maroon || c == white || c == green || c == brown) {//alpha(c) > 250) {
+      if (c == black || c == winGreen ||c == cyan || c == grey || c == maroon || c == white || c == green || c == brown) {//alpha(c) > 250) {
         FBox b = new FBox(gridSize, gridSize);
         b.setPosition(x*gridSize, y*gridSize);
         b.setStatic(true);
@@ -77,7 +114,7 @@ void loadWorld(PImage img) {
         } else if (c == cyan) { //ice
           ice.resize(gridSize, gridSize);
           b.attachImage(ice);
-          b.setFriction(0);
+          b.setFriction(0.01);
           b.setName("ice");
         } else if (c == grey) { //ice
           ice.resize(gridSize, gridSize);
@@ -105,9 +142,14 @@ void loadWorld(PImage img) {
           b.attachImage(topTrunk);
           b.setName("leaves");
         } else if (c == maroon) {
-          b.attachImage(stone);
-          b.setFriction(1);
+          b.attachImage(ice);
+          b.setFriction(0.01);
           b.setName("wall");
+        } else if (c == winGreen) {
+          winBlock.resize(gridSize, gridSize);
+          b.attachImage(winBlock);
+          b.setFriction(1);
+          b.setName("win");
         }
       } else if (c == red) {
         FLava lv = new FLava(x*gridSize, y*gridSize);
@@ -141,10 +183,119 @@ void loadPlayer() {
 }
 
 void draw() {
+  switch (mode) {
+    case INTRO:
+      drawIntro();
+      break;
+    case GAME:
+      drawGame();
+      break;
+    case PAUSE:
+      drawPause();
+      break;
+    case GAME_OVER:
+      drawGameOver();
+      break;
+    case WON:
+      drawGameWon();
+      break;
+  }
+  click();
+  textFont(retro);
+}
+
+void drawIntro() {
   background(white);
+  intro.show();
+  textAlign(CENTER, CENTER);
+  textSize(60);
+  fill(#A9D8F0);
+  text("Mario's Winter", width / 2, height / 2 - 75);
+  text("Wonderland", width / 2, height / 2 - 25);
+  myButtons[0].show();
+  
+  
+  if (myButtons[0].clicked) {
+      mode = GAME;
+    }
+}
+ 
+void drawGame() {
   drawWorld();
   actWorld();
+  game.show();
+
+  if (keyPressed && key == 'p' && !keyHandled) {
+    mode = PAUSE;
+    keyHandled = true; // Mark the key as handled
+  }
+
+  if (!keyPressed) {
+    keyHandled = false; // Reset when the key is released
+  }
 }
+
+
+void drawPause() {
+  background(white);
+  textAlign(CENTER, CENTER);
+  textSize(32);
+  fill(black);
+  text("Paused", width / 2, height / 2 - 50);
+  textSize(16);
+  text("Press 'P' to Resume", width / 2, height / 2);
+  game.show();
+
+  if (keyPressed && key == 'p' && !keyHandled) {
+    mode = GAME;
+    keyHandled = true; // Mark the key as handled
+  }
+
+  if (!keyPressed) {
+    keyHandled = false; // Reset when the key is released
+  }
+}
+
+
+void drawGameOver() {
+  background(white);
+  gameover.show();
+  textAlign(CENTER, CENTER);
+  textSize(50);
+  fill(red);
+  text("Game Over", width / 2, height / 2 - 50);
+
+  myButtons[1].show();
+  
+  
+  if (myButtons[1].clicked) {
+      resetGame();
+      mode = GAME;
+    }
+}
+
+void drawGameWon() {
+  background(white);
+  win.show();
+  textAlign(CENTER, CENTER);
+  textSize(50);
+  fill(green);
+  text("You Win!", width / 2, height / 2 - 50);
+  myButtons[0].show();
+  
+  if (myButtons[0].clicked) {
+      resetGame();
+      mode = GAME;
+    }
+}
+
+void resetGame() {
+  // Reset player, enemies, terrain, and other game states
+  world.clear();
+  loadWorld(map);
+  loadPlayer();
+}
+
 
 void actWorld() {
   player.act();
@@ -190,10 +341,21 @@ void drawWorld() {
   text("here", player.getX(), player.getY());
 }
 
+void  click() {
+  mouseReleased = false;
+  if (mousePressed) {
+    wasPressed = true;
+  }
+  if (wasPressed && mousePressed == false) {
+    mouseReleased = true;
+    wasPressed = false;
+  }
+}
+
 ArrayList<PImage> lavaImages;
 
 void loadImages() {
-  map = loadImage("map4.png");
+  map = loadImage("map.png");
   stone = loadImage("brick.png");
   ice = loadImage("blueBlock.png");
   treeTrunk = loadImage("tree_trunk.png");
@@ -204,6 +366,7 @@ void loadImages() {
   spike = loadImage("spike.png");
   trampoline = loadImage("trampoline.png");
   bridge = loadImage("bridge_center.png");
+  winBlock = loadImage("WinBlock.png");
 
 
 

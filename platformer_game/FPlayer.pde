@@ -46,6 +46,7 @@ class FPlayer extends FGameObject {
     checkForFall();
     deathTimer();
     animate();
+    checkForWin();
 
     bottomSensor.setPosition(getX(), getY() + (gridSize / 2) + 1);
     bottomSensor.setVelocity(getVelocityX(), getVelocityY());
@@ -153,16 +154,23 @@ class FPlayer extends FGameObject {
       }
 
       if (frameCount >= deathStartFrame + dieWaitFrames) {
-        die = false;
-        this.setSensor(false);
-        this.setPosition(0, 400);
-        this.setVelocity(0, 1000);
-        setAngularVelocity(0);
-        setRotation(0);
-        fall = false;
-        falling = false;
+        mode = GAME_OVER;
+        //die = false;
+        //this.setSensor(false);
+        //this.setPosition(0, 400);
+        //this.setVelocity(0, 1000);
+        //setAngularVelocity(0);
+        //setRotation(0);
+        //fall = false;
+        //falling = false;
       }
     }
+  }
+  
+  void checkForWin() {
+  if (isTouching("win")) {
+  mode = WON;
+  }
   }
 
   boolean isOnGround() {
