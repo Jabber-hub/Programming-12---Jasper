@@ -23,28 +23,6 @@ class FGoomba extends FGameObject {
   }
 
   void act() {
-    //if (!die) {
-    //  setVelocity(vx * direction, getVelocityY());
-
-    //  if (isTouching("wall") || isTouching("goomba") && frameCount > lastWallCollisionFrame + wallCooldownFrames) {
-    //    direction *= -1;
-    //    lastWallCollisionFrame = frameCount;
-    //  }
-    //  if (frameCount - lastUpdateTime >= delay) {
-    //    lastUpdateTime = frameCount;
-    //    frame = (frame + 1) % 2;
-    //    attachImage(goomba[frame]);
-    //  }
-    //  if (sTouching(this, ("bottomSensor")) && player.getY() - getY() < -gridSize/1.1) {
-    //    die = true;
-    //    player.setVelocity(player.getVelocityX(), -200);
-    //    setPosition(getX(), getY()-10);
-    //  }
-    //}  if (die == true) {
-    //  setVelocity(0, getVelocityY());
-    //  setSensor(true);
-    //}
-
     animate();
     move();
     collide();
@@ -66,22 +44,24 @@ class FGoomba extends FGameObject {
   void collide() {
     if (isTouching("wall")) {
       direction *= -1;
-      setPosition(getX()+direction, getY());
+      setPosition(getX()+direction*2, getY());
     }
-    if (isTouching("player") ) {
+    if (isTouching("player") && !player.isSensor()) {
       if (player.getY() < getY()-gridSize/1.5) {
         this.setVelocity(0, getVelocityY());
+        Kill.rewind();
+        Kill.play();
         if (!isSensor()) setPosition(getX(), getY()-1);
 
         this.setSensor(true);
 
         player.setVelocity(player.getVelocityX(), -150);
       } else {
-      
-      player.die = true;
-      player.deathStartFrame = frameCount;
-      player.setSensor(true);
-    }
+
+        player.die = true;
+        player.deathStartFrame = frameCount;
+        player.setSensor(true);
+      }
     }
   }
 }

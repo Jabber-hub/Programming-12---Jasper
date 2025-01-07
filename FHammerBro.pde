@@ -15,23 +15,25 @@ class FHammerBro extends FGameObject {
   boolean die;
 
   FHammerBro(float x, float y) {
-    super(gridSize - 5, gridSize - 5);
+    super(gridSize - 15, gridSize - 5);
     setPosition(x, y);
     setRestitution(0.4);
     setRotatable(false);
-    setName("HammerBro");
+    setName("hammerBro");
   }
 
   void act() {
     animate();
     move();
     collide();
+    throwHammers();
   }
 
   void animate() {
     if (frame >= goomba.length) frame = 0;
     if (frameCount % 5 == 0) {
-      attachImage(goomba[frame]);
+      if (direction == R) attachImage(hammerbro[frame]);
+      if (direction == L) attachImage(reverseImage(hammerbro[frame]));
       frame++;
     }
   }
@@ -44,22 +46,37 @@ class FHammerBro extends FGameObject {
   void collide() {
     if (isTouching("wall")) {
       direction *= -1;
-      setPosition(getX()+direction, getY());
+      setPosition(getX()+direction*2, getY());
     }
     if (isTouching("player") ) {
       if (player.getY() < getY()-gridSize/1.5) {
         this.setVelocity(0, getVelocityY());
+        Kill.rewind();
+        Kill.play();
         if (!isSensor()) setPosition(getX(), getY()-1);
 
         this.setSensor(true);
 
         player.setVelocity(player.getVelocityX(), -150);
       } else {
-      
-      player.die = true;
-      player.deathStartFrame = frameCount;
-      player.setSensor(true);
+
+        player.die = true;
+        player.deathStartFrame = frameCount;
+        player.setSensor(true);
+      }
     }
+  }
+  void throwHammers() {
+    if (frameCount % 150 == 0 && !isSensor()) {
+    FGameObject hammer = new FGameObject(20, 20);
+    hammer.setPosition(getX(), getY());
+    hammer.setVelocity(random(150, 250)*direction, -random(400, 600));
+    hammer.setAngularVelocity(random(20, 50)*direction);
+    hammer.setSensor(true);
+    hammer.setRestitution(1);
+    hammer.attachImage(Hammer);
+    hammer.setName("hammer");
+    world.add(hammer);
     }
   }
 }

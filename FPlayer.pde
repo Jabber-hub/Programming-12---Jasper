@@ -21,6 +21,7 @@ class FPlayer extends FGameObject {
     super(gridSize-10, gridSize-5);
     setPosition(0, 400);
     setRotation(0);
+    setDensity(1);
     direction = R;
     setName("player");
     setFillColor(color(255, 0, 0));
@@ -45,9 +46,21 @@ class FPlayer extends FGameObject {
     checkForFall();
     deathTimer();
     animate();
+    checkForWin();
 
     bottomSensor.setPosition(getX(), getY() + (gridSize / 2) + 1);
     bottomSensor.setVelocity(getVelocityX(), getVelocityY());
+
+    //teleport
+    if (rightkey == true) {
+      setPosition(1300, 700);
+    }
+    
+    //Trampoline sound
+    if (isTouching("trampoline")) {
+    bigJump.rewind();
+    bigJump.play();
+    }
   }
 
   void animate() {
@@ -87,7 +100,8 @@ class FPlayer extends FGameObject {
       if (sTouching(bottomSensor, "floor") && !jumping) {
         jumping = true;
         jumpStartFrame = frameCount;
-        //println("Jump started");
+        Jump.rewind();
+        Jump.play();
       }
 
       if (jumping && (frameCount - jumpStartFrame) < maxJumpFrames) {
@@ -116,10 +130,12 @@ class FPlayer extends FGameObject {
       falling = false;
     }
 
-    if (this.getY() > 800 && !falling && !die) {
+    if (this.getY() > 850 && !falling && !die) {
       cameraX = this.getX();
       cameraY = this.getY();
       falling = true;
+      Fall.rewind();
+      Fall.play();
       //if player falling, get x,y coordinates
     }
 
@@ -129,20 +145,12 @@ class FPlayer extends FGameObject {
   }
 
   void checkForDeadly() { //player touching deadly block?
-    if (sTouching(bottomSensor, "spike") || sTouching(bottomSensor, "lava")) {
+    if (sTouching(bottomSensor, "spike") || isTouching("thwomp") || sTouching(bottomSensor, "lava") || isTouching("hammer")) {
       this.setSensor(true);
       die = true;
       deathStartFrame = frameCount;
       this.setVelocity(0, -400);
     }
-    //if (isTouching("goomba")) {
-    //  if (!sTouching(bottomSensor, "goomba")) {
-    //    this.setSensor(true);
-    //    die = true;
-    //    deathStartFrame = frameCount;
-    //    this.setVelocity(0, -400);
-    //  }
-    //}
   }
 
   void deathTimer() { //wait before set die false
@@ -155,19 +163,19 @@ class FPlayer extends FGameObject {
       }
 
       if (frameCount >= deathStartFrame + dieWaitFrames) {
-        die = false;
-        this.setSensor(false);
-        this.setPosition(0, 400);
-        this.setVelocity(0, 1000);
-        setAngularVelocity(0);
-        setRotation(0);
-        fall = false;
-        falling = false;
+        mode = GAME_OVER;
+        Game_over.rewind();
+        Game_over.play();
       }
     }
   }
 
-  boolean isOnGround() {
-    return abs(this.getVelocityY()) < 0.5;
+  void checkForWin() {
+    if (isTouching("win")) {
+      mode = WON;
+      Win.rewind();
+      Win.play();
+    }
   }
+
 }

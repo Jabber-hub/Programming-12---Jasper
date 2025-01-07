@@ -17,14 +17,17 @@ void keyReleased() {
   if (key == 'd' || key == 'D') dkey = false;
   if (keyCode == UP) {
     upkey = false;
-    FGoomba gmb = new FGoomba(player.getX() + (mouseX-width/2)/zoom, player.getY() + (mouseY-width/2)/zoom);
-    println(mouseX-width/2, mouseY-width/2);
-    enemies.add(gmb);
-    world.add(gmb);
+    //FGoomba gmb = new FGoomba(player.getX() + (mouseX-width/2)/zoom, player.getY() + (mouseY-width/2)/zoom);
+    //println(mouseX-width/2, mouseY-width/2);
+    //enemies.add(gmb);
+    //world.add(gmb);
   }
   if (keyCode == DOWN) {
     downkey = false;
-    println(player.getX(), player.getY());
+    //FHammerBro hb = new FHammerBro(player.getX() + (mouseX-width/2)/zoom, player.getY() + (mouseY-width/2)/zoom);
+    //println(mouseX-width/2, mouseY-width/2);
+    //enemies.add(hb);
+    //world.add(hb);
   }
   if (keyCode == LEFT) leftkey = false;
   if (keyCode == RIGHT) rightkey = false;
