@@ -123,7 +123,12 @@ class FThwomp extends FGameObject {
       println("State: Still");
     }
     //println("Mouse X: " + mouseX + ", Mouse Y: " + mouseY);
-  }
+  
+    if (abs(getX() - restX) > 0.01) {
+    setPosition(restX, getY());
+    }
+}
+  
 
   void move() {
   }

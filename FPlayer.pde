@@ -46,7 +46,8 @@ class FPlayer extends FGameObject {
     checkForFall();
     deathTimer();
     animate();
-    checkForWin();
+    checkpoints();
+    portals();
 
     bottomSensor.setPosition(getX(), getY() + (gridSize / 2) + 1);
     bottomSensor.setVelocity(getVelocityX(), getVelocityY());
@@ -55,11 +56,11 @@ class FPlayer extends FGameObject {
     if (rightkey == true) {
       setPosition(1300, 700);
     }
-    
+
     //Trampoline sound
     if (isTouching("trampoline")) {
-    bigJump.rewind();
-    bigJump.play();
+      bigJump.rewind();
+      bigJump.play();
     }
   }
 
@@ -136,6 +137,7 @@ class FPlayer extends FGameObject {
       falling = true;
       Fall.rewind();
       Fall.play();
+      loseLife();
       //if player falling, get x,y coordinates
     }
 
@@ -157,25 +159,57 @@ class FPlayer extends FGameObject {
     if (die) {
       setAngularVelocity(30);
 
+
       if (deathStartFrame == frameCount) {
         cameraX = this.getX();
         cameraY = this.getY();
       }
 
       if (frameCount >= deathStartFrame + dieWaitFrames) {
-        mode = GAME_OVER;
-        Game_over.rewind();
-        Game_over.play();
+        Fall.rewind();
+        Fall.play();
+        resetPlayer();
+        loseLife();
       }
     }
   }
 
-  void checkForWin() {
+  void resetPlayer() {
+    this.setPosition(0, 400);
+    this.setVelocity(0, 1000);
+    setAngularVelocity(0);
+    setRotation(0);
+    fall = false;
+    falling = false;
+    die = false;
+    this.setSensor(false);
+  }
+  
+  void loseLife() {
+    playerLives--;
+    if (playerLives <= 0) {
+      mode = GAME_OVER;
+      Game_over.rewind();
+      Game_over.play();
+    }
+  }
+
+  void checkpoints() {
+    if (isTouching("checkpoint")) {
+      mode = MAP2;
+      loadMap2();
+    }
     if (isTouching("win")) {
       mode = WON;
       Win.rewind();
       Win.play();
     }
   }
-
+  
+  void portals() {
+  if (isTouching("portalIn")) {
+    println("touching portal");
+  player.setPosition(FPortalOut.getX()+50, FPortalOut.getY());
+  }
+  }
 }

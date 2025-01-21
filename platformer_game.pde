@@ -28,22 +28,27 @@ color maroon      = #600000;
 color hbBlue      = #4444ee;
 color thwompPink  = #ff7777;
 color winGreen    = #aaccaa;
+color checkpoint  = #655C00;
+color inPurple    = #a20086;
+color outGreen    = #a2ff86;
 
 
-PImage map, winBlock, Hammer, bridge, stone, ice, treeTrunk, leaves, leftLeaves, rightLeaves, topTrunk, trampoline, lava, spike;
+PImage map, map2, portalIn, portalOut, winBlock, checkPoint, Hammer, bridge, stone, ice, treeTrunk, leaves, leftLeaves, rightLeaves, topTrunk, trampoline, lava, spike;
 //mario animations
 PImage[] idle;
 PImage[] jump;
 PImage[] run;
 PImage[] action;
 
+
+int playerLives = 3;
 //enemies
 PImage[] goomba;
 PImage[] hammerbro;
 PImage[] thwomp;
 
 int gridSize = 32;
-float zoom = 1.5;
+float zoom = 1.9;
 
 //keyboard
 boolean wkey, akey, skey, dkey, upkey, downkey, rightkey, leftkey, spacekey;
@@ -53,12 +58,15 @@ ArrayList<FGameObject> enemies;
 
 float cameraX, cameraY;
 
+FBox FPortalIn, FPortalOut;
+
 // Mode framework
 final int INTRO = 0;
 final int GAME = 1;
 final int PAUSE = 2;
 final int GAME_OVER = 3;
 final int WON = 4;
+final int MAP2 = 5;
 
 int mode = INTRO; // Start in the intro mode
 
@@ -89,14 +97,14 @@ void setup() {
 
   loadPlayer();
   loadWorld(map);
-  
+
   //Buttons
   myButtons = new Button[2];
   myButtons[0] = new Button("START", width/2, height/2 + 100, 250, 100, black, white);
   myButtons[1] = new Button("RETRY", width/2, height/2 + 100, 250, 100, white, black);
-  
+
   retro = createFont("Retro Gaming.ttf", 75);
-  
+
   //GIFS
   intro = new gif("Intro/frame_", "_delay-0.2s.gif", 10, 20, 0, 0, width, height);
   game = new gif("Game/frame_", "_delay-0.2s.gif", 4, 15, 0, 0, width, height);
@@ -123,7 +131,7 @@ void loadWorld(PImage img) {
       color s = img.get(x, y+1); //color of pixel below
       color w = img.get(x-1, y); //color of pixel west
       color e = img.get(x+1, y); //color of pixel east
-      if (c == black || c == winGreen ||c == cyan || c == grey || c == maroon || c == white || c == green || c == brown) {//alpha(c) > 250) {
+      if (c == black || c == inPurple || c == outGreen || c == checkpoint || c == winGreen ||c == cyan || c == grey || c == maroon || c == white || c == green || c == brown) {//alpha(c) > 250) {
         FBox b = new FBox(gridSize, gridSize);
         b.setPosition(x*gridSize, y*gridSize);
         b.setStatic(true);
@@ -145,7 +153,7 @@ void loadWorld(PImage img) {
         } else if (c == white) { //trampoline
           trampoline.resize(gridSize, gridSize+30);
           b.attachImage(trampoline);
-          b.setRestitution(1.3);
+          b.setRestitution(1.34);
           b.setName("trampoline");
         } else if (c == green && w == green && e == green && s != brown) { //leaves
           b.attachImage(leaves);
@@ -172,6 +180,23 @@ void loadWorld(PImage img) {
           b.attachImage(winBlock);
           b.setFriction(1);
           b.setName("win");
+        } else if (c == checkpoint) {
+          checkPoint.resize(gridSize, gridSize);
+          b.attachImage(checkPoint);
+          b.setFriction(1);
+          b.setName("checkpoint");
+        } else if (c == inPurple) {
+          portalIn.resize(gridSize, gridSize);
+          b.attachImage(portalIn);
+          b.setName("portalIn");
+          //FPortalIn = b;
+          //world.add(b);
+        } else if (c == outGreen) {
+          portalOut.resize(gridSize, gridSize);
+          b.attachImage(portalOut);
+          b.setName("portalOut");
+          FPortalOut = b;
+          world.add(b);
         }
       } else if (c == red) {
         FLava lv = new FLava(x*gridSize, y*gridSize);
@@ -206,21 +231,24 @@ void loadPlayer() {
 
 void draw() {
   switch (mode) {
-    case INTRO:
-      drawIntro();
-      break;
-    case GAME:
-      drawGame();
-      break;
-    case PAUSE:
-      drawPause();
-      break;
-    case GAME_OVER:
-      drawGameOver();
-      break;
-    case WON:
-      drawGameWon();
-      break;
+  case INTRO:
+    drawIntro();
+    break;
+  case GAME:
+    drawGame();
+    break;
+  case MAP2:
+    drawMap2();
+    break;
+  case PAUSE:
+    drawPause();
+    break;
+  case GAME_OVER:
+    drawGameOver();
+    break;
+  case WON:
+    drawGameWon();
+    break;
   }
   click();
   textFont(retro);
@@ -235,21 +263,40 @@ void drawIntro() {
   text("Mario's Winter", width / 2, height / 2 - 75);
   text("Wonderland", width / 2, height / 2 - 25);
   myButtons[0].show();
-  
-  
+
+
   if (myButtons[0].clicked) {
-      mode = GAME;
-      Kill.rewind();
-      Kill.play();
-      Theme.rewind();
-      Theme.play();
-    }
+    mode = GAME;
+    Kill.rewind();
+    Kill.play();
+    Theme.rewind();
+    Theme.play();
+  }
 }
- 
+
 void drawGame() {
   drawWorld();
   actWorld();
   game.show();
+  showLives();
+
+  if (keyPressed && key == 'p' && !keyHandled) {
+    mode = PAUSE;
+    keyHandled = true; // Mark the key as handled
+    Theme.pause();
+  }
+
+  if (!keyPressed) {
+    keyHandled = false; // Reset when the key is released
+  }
+}
+
+void drawMap2() {
+  drawWorld();
+  actWorld();
+  game.show();
+  showLives();
+  //loadWorld(map2);
 
   if (keyPressed && key == 'p' && !keyHandled) {
     mode = PAUSE;
@@ -296,16 +343,16 @@ void drawGameOver() {
   text("Game Over", width / 2, height / 2 - 50);
 
   myButtons[1].show();
-  
-  
+
+
   if (myButtons[1].clicked) {
-      resetGame();
-      mode = GAME;
-      Kill.rewind();
-      Kill.play();
-      Theme.rewind();
-      Theme.play();
-    }
+    resetGame();
+    mode = GAME;
+    Kill.rewind();
+    Kill.play();
+    Theme.rewind();
+    Theme.play();
+  }
 }
 
 void drawGameWon() {
@@ -319,20 +366,37 @@ void drawGameWon() {
   fill(green);
   text("You Win!", width / 2, height / 2 - 50);
   myButtons[0].show();
-  
+
   if (myButtons[0].clicked) {
-      resetGame();
-      mode = GAME;
-      Theme.rewind();
-      Theme.play();
-    }
+    resetGame();
+    mode = GAME;
+    Theme.rewind();
+    Theme.play();
+  }
 }
 
 void resetGame() {
   // Reset player, enemies, terrain, and other game states
   world.clear();
+  terrain.clear();
+  enemies.clear();
   loadWorld(map);
   loadPlayer();
+  playerLives = 3;
+}
+
+void loadMap2() {
+  // Reset player, enemies, terrain, and other game states
+  world.clear();
+  terrain.clear();
+  enemies.clear();
+  loadWorld(map2);
+  loadPlayer();
+}
+
+void showLives() {
+
+  text(playerLives, 50, 50);
 }
 
 
@@ -395,8 +459,10 @@ ArrayList<PImage> lavaImages;
 
 void loadImages() {
   map = loadImage("map.png");
+  map2 = loadImage("map2.png");
+
   stone = loadImage("brick.png");
-  ice = loadImage("blueBlock.png");
+  ice = loadImage("ice.png");
   treeTrunk = loadImage("tree_trunk.png");
   topTrunk = loadImage("tree_intersect1.png");
   leaves = loadImage("treetop_center1.png");
@@ -406,6 +472,9 @@ void loadImages() {
   trampoline = loadImage("trampoline.png");
   bridge = loadImage("bridge_center.png");
   winBlock = loadImage("WinBlock.png");
+  checkPoint = loadImage("Checkpoint.png");
+  portalIn = loadImage("portalIn.png");
+  portalOut = loadImage("portalOut.png");
 
 
 
@@ -439,9 +508,9 @@ void loadImages() {
   hammerbro[0].resize(gridSize-5, gridSize-5);
   hammerbro[1] = loadImage("hammerbro1.png");
   hammerbro[1].resize(gridSize-5, gridSize-5);
-  
+
   Hammer = loadImage("hammer.png");
-  
+
   thwomp = new PImage[2];
   thwomp[0] = loadImage("thwomp0.png");
   thwomp[0].resize(gridSize*2, gridSize*2);

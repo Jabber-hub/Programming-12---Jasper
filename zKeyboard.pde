@@ -17,10 +17,8 @@ void keyReleased() {
   if (key == 'd' || key == 'D') dkey = false;
   if (keyCode == UP) {
     upkey = false;
-    //FGoomba gmb = new FGoomba(player.getX() + (mouseX-width/2)/zoom, player.getY() + (mouseY-width/2)/zoom);
-    //println(mouseX-width/2, mouseY-width/2);
-    //enemies.add(gmb);
-    //world.add(gmb);
+    mode = MAP2;
+    loadMap2();
   }
   if (keyCode == DOWN) {
     downkey = false;
