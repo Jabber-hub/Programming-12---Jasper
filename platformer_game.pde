@@ -33,7 +33,7 @@ color inPurple    = #a20086;
 color outGreen    = #a2ff86;
 
 
-PImage map, map2, portalIn, portalOut, winBlock, checkPoint, Hammer, bridge, stone, ice, treeTrunk, leaves, leftLeaves, rightLeaves, topTrunk, trampoline, lava, spike;
+PImage map, map2, frostBoo, portalIn, portalOut, winBlock, checkPoint, Hammer, bridge, stone, ice, treeTrunk, leaves, leftLeaves, rightLeaves, topTrunk, trampoline, lava, spike;
 //mario animations
 PImage[] idle;
 PImage[] jump;
@@ -218,6 +218,12 @@ void loadWorld(PImage img) {
         FThwomp thw = new FThwomp(x*gridSize + 16, y*gridSize + 15);
         enemies.add(thw);
         world.add(thw);
+      } else if (c == blue) {
+        for (int i = 0; i < 5; i++) {
+          FFrostPhantom fp = new FFrostPhantom(x*gridSize, y*gridSize);
+          enemies.add(fp);
+          world.add(fp);
+        }
       }
     }
   }
@@ -475,6 +481,7 @@ void loadImages() {
   checkPoint = loadImage("Checkpoint.png");
   portalIn = loadImage("portalIn.png");
   portalOut = loadImage("portalOut.png");
+  frostBoo = loadImage("frostPhantom.png");
 
 
 

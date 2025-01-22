@@ -16,6 +16,8 @@ class FPlayer extends FGameObject {
   int jumpStartFrame = 0;
   int maxJumpFrames = 12;
   float jumpImpulse = -70;
+  
+  boolean frozen = false;
 
   FPlayer() {
     super(gridSize-10, gridSize-5);
@@ -48,6 +50,7 @@ class FPlayer extends FGameObject {
     animate();
     checkpoints();
     portals();
+    frostGhost();
 
     bottomSensor.setPosition(getX(), getY() + (gridSize / 2) + 1);
     bottomSensor.setVelocity(getVelocityX(), getVelocityY());
@@ -211,5 +214,9 @@ class FPlayer extends FGameObject {
     println("touching portal");
   player.setPosition(FPortalOut.getX()+50, FPortalOut.getY());
   }
+  }
+  
+  void frostGhost() {
+  if (frozen) return;
   }
 }
