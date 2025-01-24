@@ -39,7 +39,7 @@ void setup() {
   //initialize map
   map = loadImage("map.png");
   gridSize = 100;
-  
+
   //textures
   brick = loadImage("Stone_Bricks.png");
 
@@ -94,8 +94,8 @@ void controlCamera() {
     eyeZ = eyeZ - sin(leftRightHeadAngle-radians(90))*10;
   }
 
-  leftRightHeadAngle = leftRightHeadAngle + (mouseX - width/2)*0.01;
-  upDownHeadAngle = upDownHeadAngle + (mouseY - height/2)*0.01;
+  leftRightHeadAngle = leftRightHeadAngle + (mouseX - pmouseX)*0.01;
+  upDownHeadAngle = upDownHeadAngle + (mouseY - pmouseY)*0.01;
   if (upDownHeadAngle > PI/2.5) upDownHeadAngle = PI/2.5;
   if (upDownHeadAngle > -PI/2.5) upDownHeadAngle = -PI/2.5;
 
@@ -103,9 +103,8 @@ void controlCamera() {
   focusZ = eyeZ + sin(leftRightHeadAngle)*300;
   focusY = eyeY + tan(upDownHeadAngle)*300;
 
-  //wrapMouse();  
-  rbt.mouseMove(width/2, height/2);
-
+  //wrapMouse();
+  //rbt.mouseMove(width/2, height/2);
 }
 
 void drawMap() {
@@ -113,14 +112,18 @@ void drawMap() {
     for (int y = 0; y < map.height; y++) {
       color c = map.get(x, y);
       if (c != white) {
-      texturedCube(x*gridSize-1500, height-gridSize, y*gridSize-2000, brick, gridSize); 
-      }
+        texturedCube(x*gridSize-1500, height-gridSize, y*gridSize-2000, brick, gridSize);
+        texturedCube(x*gridSize-1500, height-gridSize*2, y*gridSize-2000, brick, gridSize);
+        texturedCube(x*gridSize-1500, height-gridSize*3, y*gridSize-2000, brick, gridSize);
+        texturedCube(x*gridSize-1500, height-gridSize*4, y*gridSize-2000, brick, gridSize);
+    }
     }
   }
 }
 
 
-void wrapMouse() {
+void wrapMouse() { //wrapping mouse doesnt work on mac
+  //Mr P said I dont need it
   //if (mouseX > width-2) rbt.mouseMove(2, mouseY);
   //else if (mouseX < 2) rbt.mouseMove(width-2, mouseY);
 }
