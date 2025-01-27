@@ -21,6 +21,8 @@ class Bullet extends GameObject {
       loc.add(dir);
     } else {
       lives = 0;
+      snowball.rewind();
+      snowball.play();
       for (int i = 0; i < 5; i++) {
         objects.add(new Particle(loc));
       }

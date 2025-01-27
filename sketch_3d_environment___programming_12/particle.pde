@@ -26,7 +26,7 @@ class Particle extends GameObject {
     fill(white, lifespan); // Fade effect
     box(size); 
     popMatrix();
-
+    
     fill(white);
   }
 }

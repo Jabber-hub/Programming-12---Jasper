@@ -4,7 +4,7 @@ void drawFloor(int start, int end, int level, int gap) {
   int x = start;
   int z = start;
   while (z < end) {
-    texturedCube(x, level, z, brick, gap);
+    texturedCube(x, level, z, diamond, gap);
     x = x + gap;
     if (x >= end) {
       x = start;

@@ -1,3 +1,14 @@
+import ddf.minim.*;
+import ddf.minim.analysis.*;
+import ddf.minim.effects.*;
+import ddf.minim.signals.*;
+import ddf.minim.spi.*;
+import ddf.minim.ugens.*;
+
+Minim minim;
+
+AudioPlayer snowball;
+
 import java.awt.Robot;
 
 color black = #000000; //Stone bricks
@@ -56,6 +67,10 @@ void setup() {
   catch(Exception e) {
     e.printStackTrace();
   }
+  
+  //minim
+  minim = new Minim(this);
+  snowball = minim.loadFile("snowball.mp3");
 }
 
 void draw() {
