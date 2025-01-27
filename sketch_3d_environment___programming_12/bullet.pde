@@ -14,7 +14,7 @@ class Bullet extends GameObject {
   }
 
   void act() {
-    int hitX = int(loc.x+2000)/gridSize;
+    int hitX = int(loc.x+1500)/gridSize;
     int hitY = int(loc.z+2000)/gridSize;
 
     if (map.get(hitX, hitY) == white) {
@@ -22,7 +22,7 @@ class Bullet extends GameObject {
     } else {
       lives = 0;
       for (int i = 0; i < 5; i++) {
-        //objects.add(new Particle(loc));
+        objects.add(new Particle(loc));
       }
     }
   }
