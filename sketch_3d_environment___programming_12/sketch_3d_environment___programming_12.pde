@@ -1,7 +1,8 @@
 import java.awt.Robot;
 
-color black = #000000;
-color white = #FFFFFF;
+color black = #000000; //Stone bricks
+color white = #FFFFFF; //Empty space
+color green = #00ff00; //Oak plank
 
 //map variables
 int gridSize;
@@ -9,6 +10,7 @@ PImage map;
 
 //texture
 PImage brick;
+PImage diamond;
 
 Robot rbt;
 
@@ -26,7 +28,7 @@ void setup() {
 
   wkey = akey = skey = dkey = false;
   eyeX = width/2;
-  eyeY = height/2;
+  eyeY = height/2+250;
   eyeZ = 0;
   focusX = width/2;
   focusY = height/2;
@@ -43,6 +45,8 @@ void setup() {
   //textures
   brick = loadImage("Stone_Bricks.png");
 
+  diamond = loadImage("Diamond.png");
+
   try {
     rbt = new Robot();
   }
@@ -53,18 +57,29 @@ void setup() {
 
 void draw() {
   background(0);
+
+  pointLight(255, 255, 255, eyeX, eyeY, eyeZ);
   camera(eyeX, eyeY, eyeZ, focusX, focusY, focusZ, tiltX, tiltY, tiltZ);
-  drawFloor();
+
+  drawFloor(-2000, 2000, height, 100);
+  drawFloor(-2000, 2000, height-gridSize*5, 100);
   drawFocalPoint();
   controlCamera();
   drawMap();
 }
 
-void drawFloor() {
+void drawFloor(int start, int end, int level, int gap) {
   stroke(255);
-  for (int x = -2000; x <= 2000; x = x + 100) {
-    line(x, height, -2000, x, height, 2000);
-    line(-2000, height, x, 2000, height, x);
+  strokeWeight(1);
+  int x = start;
+  int z = start;
+  while (z < end) {
+    texturedCube(x, level, z, brick, gap);
+    x = x + gap;
+    if (x >= end) {
+      x = start;
+      z = z + gap;
+    }
   }
 }
 
@@ -77,19 +92,19 @@ void drawFocalPoint() {
 
 void controlCamera() {
 
-  if (wkey) {
+  if (wkey && canMoveForward()) {
     eyeX = eyeX + cos(leftRightHeadAngle)*10;
     eyeZ = eyeZ + sin(leftRightHeadAngle)*10;
   }
-  if (skey) {
+  if (skey && canMoveBack()) {
     eyeX = eyeX - cos(leftRightHeadAngle)*10;
     eyeZ = eyeZ - sin(leftRightHeadAngle)*10;
   }
-  if (akey) {
+  if (akey && canMoveLeft()) {
     eyeX = eyeX + cos(leftRightHeadAngle-radians(90))*10;
     eyeZ = eyeZ + sin(leftRightHeadAngle-radians(90))*10;
   }
-  if (dkey) {
+  if (dkey && canMoveRight()) {
     eyeX = eyeX - cos(leftRightHeadAngle-radians(90))*10;
     eyeZ = eyeZ - sin(leftRightHeadAngle-radians(90))*10;
   }
@@ -107,16 +122,90 @@ void controlCamera() {
   //rbt.mouseMove(width/2, height/2);
 }
 
+boolean canMoveForward() {
+  float fwdX, fwdZ;
+  int mapX, mapY;
+
+  fwdX = eyeX + cos(leftRightHeadAngle)*150;
+  fwdZ = eyeZ + sin(leftRightHeadAngle)*150;
+
+  mapX = int(fwdX+1500) / gridSize;
+  mapY = int(fwdZ+2000) / gridSize;
+
+  if (map.get(mapX, mapY) == white) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+boolean canMoveLeft() {
+  float leftX, leftZ;
+  int mapX, mapY;
+
+  leftX = eyeX + cos(leftRightHeadAngle)*150;
+  leftZ = eyeZ + sin(leftRightHeadAngle)*150;
+
+  mapX = int(leftX+1500) / gridSize;
+  mapY = int(leftZ+2000) / gridSize;
+
+  if (map.get(mapX, mapY) == white) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+boolean canMoveRight() {
+  float rightX, rightZ;
+  int mapX, mapY;
+
+  rightX = eyeX + cos(leftRightHeadAngle+radians(90))*150;
+  rightZ = eyeZ + sin(leftRightHeadAngle+radians(90))*150;
+
+  mapX = int(rightX+1500) / gridSize;
+  mapY = int(rightZ+2000) / gridSize;
+
+  if (map.get(mapX, mapY) == white) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+boolean canMoveBack() {
+  float backX, backZ;
+  int mapX, mapY;
+
+  backX = eyeX - cos(leftRightHeadAngle)*150;
+  backZ = eyeZ - sin(leftRightHeadAngle)*150;
+
+  mapX = int(backX+1500) / gridSize;
+  mapY = int(backZ+2000) / gridSize;
+
+  if (map.get(mapX, mapY) == white) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 void drawMap() {
   for (int x = 0; x < map.width; x++) {
     for (int y = 0; y < map.height; y++) {
       color c = map.get(x, y);
-      if (c != white) {
+      if (c == black) {
         texturedCube(x*gridSize-1500, height-gridSize, y*gridSize-2000, brick, gridSize);
         texturedCube(x*gridSize-1500, height-gridSize*2, y*gridSize-2000, brick, gridSize);
         texturedCube(x*gridSize-1500, height-gridSize*3, y*gridSize-2000, brick, gridSize);
         texturedCube(x*gridSize-1500, height-gridSize*4, y*gridSize-2000, brick, gridSize);
-    }
+      }
+      if (c == green) {
+        texturedCube(x*gridSize-1500, height-gridSize, y*gridSize-2000, diamond, gridSize);
+        texturedCube(x*gridSize-1500, height-gridSize*2, y*gridSize-2000, diamond, gridSize);
+        texturedCube(x*gridSize-1500, height-gridSize*3, y*gridSize-2000, diamond, gridSize);
+        texturedCube(x*gridSize-1500, height-gridSize*4, y*gridSize-2000, diamond, gridSize);
+      }
     }
   }
 }
